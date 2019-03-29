@@ -1,0 +1,11 @@
+<html>
+  {{render "content" "hello.tmpl" .}}
+
+  <script src="/static/wasm_exec.js"></script>
+  <script>
+    const go = new Go();
+    WebAssembly.instantiateStreaming(fetch("/static/index.wasm"), go.importObject).then((result) => {
+      go.run(result.instance);
+    });
+  </script>
+</html>
