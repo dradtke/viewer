@@ -42,6 +42,8 @@ func render(divID, name string, data templater) (template.HTML, error) {
 	}
 	result.WriteString(fmt.Sprintf(`<script type="text/template" id="%s-template">%s</script>`, divID, buf.String()))
 
+	// TODO: can we override the "template" template function? That might allow client templates to reference
+	// other client templates without having to pass in more than one name.
 	ct, err := template.New("").Delims("[[", "]]").Parse(buf.String())
 	if err != nil {
 		return template.HTML(""), fmt.Errorf("failed to parse client template %s: %s", name, err)

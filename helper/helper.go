@@ -21,6 +21,31 @@ func getElement(id string) js.Value {
 	return js.Global().Get("document").Call("getElementById", id)
 }
 
+func init() {
+	resolve(
+		js.Global().Call("fetch", "https://raw.githubusercontent.com/wingify/dom-comparator/master/dist/dom-comparator.js"),
+		func(response js.Value) {
+			resolve(
+				response.Call("text"),
+				func(response js.Value) { fmt.Println("got value:", response) },
+				func(jerr js.Value) { fmt.Println("error:", jerr) },
+			)
+		},
+		func(jerr js.Value) { fmt.Println("error:", jerr) },
+	)
+}
+
+func resolve(promise js.Value, then, catch func(js.Value)) {
+	promise.Call("then", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		then(args[0])
+		return nil
+	}))
+	promise.Call("catch", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		catch(args[0])
+		return nil
+	}))
+}
+
 func Register(divID string, state interface{}) {
 	node := getElement(divID)
 	templateNode := getElement(divID + "-template")
